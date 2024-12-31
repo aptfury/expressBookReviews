@@ -79,7 +79,7 @@ public_users.get('/review/:isbn',function (req, res) {
   if (!isbn) {
     res.send(`You must enter an ISBN to look up a review.`);
   } else {
-    res.send(`Here\'s what people have to say about ${title}\n\n${review}`);
+    res.send(`Here\'s what people have to say about ${title}\n\n${JSON.stringify({review}, null, 4)}`);
   }
 });
 
