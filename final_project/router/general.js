@@ -34,18 +34,18 @@ public_users.get('/author/:author',function (req, res) {
   //Write your code here
   let author = req.params.author;
 
-  let book = {};
+  let book = [];
 
   for (let isbn in books) {
     if (books[isbn]["author"] === author) {
-      book = books[isbn];
+      book.push(books[isbn]);
     }
   }
 
-  if (book) {
+  if (book.length > 0) {
     res.send(JSON.stringify({book}, null, 4));
   } else {
-    res.send("There was no book by that author.")
+    res.send(`We couldn\'t find a book by ${author}.`)
   }
 });
 
