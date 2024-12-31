@@ -42,7 +42,7 @@ public_users.get('/author/:author',function (req, res) {
     }
   }
 
-  if (book.lenth > 0) {
+  if (book) {
     res.send(JSON.stringify({book}, null, 4));
   } else {
     res.send("There was no book by that author.")
