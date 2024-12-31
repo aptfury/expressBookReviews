@@ -75,11 +75,15 @@ public_users.get('/review/:isbn',function (req, res) {
   let isbn = req.params.isbn;
   let review = books[isbn]["reviews"];
   let title = books[isbn]["title"];
+  let reviewList = {
+    "title": title,
+    "reviews": review
+  }
 
   if (!isbn) {
     res.send(`You must enter an ISBN to look up a review.`);
   } else {
-    res.send(`Here\'s what people have to say about ${title}\n\n${JSON.stringify({review}, null, 4)}`);
+    res.send(`VERSION 1\n\nHere\'s what people have to say about ${title}\n\n${JSON.stringify({review}, null, 4)}\n\nVERSION 2\n\n${JSON.stringify({reviewList}, null, 4)}`);
   }
 });
 
