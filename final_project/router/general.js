@@ -13,12 +13,18 @@ const doesExist = (username) => {
   return userswithsamename.length > 0;
 }
 
+// Register a new user
 public_users.post("/register", (req, res) => {
-  //Write your code here
   let username = req.query.username;
   let password = req.query.password;
 
   if (username && password) {
+    if (!isValid(username)) {
+      return res.status(400).json({
+        message: "Username must be more than 3 characters and must contain only letters."
+      })
+    }
+
     if (!doesExist(username)) {
       users.push({
         "username": username,
@@ -30,19 +36,11 @@ public_users.post("/register", (req, res) => {
       return res.status(404).json({ message: "This user already exists!" });
     }
   }
-  console.log(`user: ${username}\n\npass: ${password}`);
   return res.status(404).json({ message: "Unable to register user." });
 });
 
-/*
-// Get the book list available in the shop - no axios or promise
-public_users.get('/',function (req, res) {
-  res.send(JSON.stringify({ books }, null, 4));
-});
-*/
-
 // Get available books list with promise
-public_users.get('/', async (req, res) => {
+public_users.get('/', (req, res) => {
   new Promise((resolve, reject) => {
     try {
       resolve(JSON.stringify(books, null, 4));
@@ -55,23 +53,8 @@ public_users.get('/', async (req, res) => {
   );
 });
 
-/* 
-// Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  let isbn = req.params.isbn;
-  let book = books[isbn];
-
-  if (book) {
-    res.send(JSON.stringify({book}, null, 4));
-  } else {
-    res.send("Unable to locate the book you were looking for.");
-  }
-});
- */
-
 // Get book by ISBN with promise
-public_users.get('/isbn/:isbn', async (req, res) => {
+public_users.get('/isbn/:isbn', (req, res) => {
   new Promise((resolve, reject) => {
     try {
       const isbn = req.params.isbn;
@@ -88,30 +71,8 @@ public_users.get('/isbn/:isbn', async (req, res) => {
   );
 });
 
-/* 
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  let author = req.params.author;
-
-  let book = [];
-
-  for (let isbn in books) {
-    if (books[isbn]["author"] === author) {
-      book.push(books[isbn]);
-    }
-  }
-
-  if (book.length > 0) {
-    res.send(JSON.stringify({book}, null, 4));
-  } else {
-    res.send(`We couldn\'t find a book by ${author}.`)
-  }
-});
- */
-
 // Get book by author with promise
-public_users.get('/author/:author', async (req, res) => {
+public_users.get('/author/:author', (req, res) => {
   new Promise((resolve, reject) => {
     try {
       const author = req.params.author;
@@ -134,30 +95,8 @@ public_users.get('/author/:author', async (req, res) => {
   )
 });
 
-/* 
-// Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  let title = req.params.title;
-
-  let book = [];
-
-  for (let isbn in books) {
-    if (books[isbn]["title"] === title) {
-      book.push(books[isbn]);
-    }
-  }
-
-  if (book.length > 0) {
-    res.send(JSON.stringify({book}, null, 4));
-  } else {
-    res.send(`We couldn\'t find a book by the name of ${title}.`);
-  }
-});
- */
-
 // Get book by title with promise
-public_users.get('/title/:title', async (req, res) => {
+public_users.get('/title/:title', (req, res) => {
   new Promise((resolve, reject) => {
     try {
       const title = req.params.title;
@@ -181,18 +120,25 @@ public_users.get('/title/:title', async (req, res) => {
 });
 
 //  Get book review
-public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
-  let isbn = req.params.isbn;
-  let review = books[isbn]["reviews"];
-  let title = books[isbn]["title"];
-  let author = books[isbn]["author"];
+public_users.get('/review/:isbn', (req, res) => {
+  new Promise((resolve, reject) => {
+    try {
+      const isbn = req.params.isbn;
+      const reviews = books[isbn]["reviews"];
+      const title = books[isbn]["title"];
+      const author = books[isbn]["author"];
 
-  if (!isbn) {
-    res.send(`You must enter an ISBN to look up a review.`);
-  } else {
-    res.send(`Here\'s what people have to say about ${title} by ${author}\n\n${JSON.stringify({review}, null, 4)}`);
-  }
+      if (!isbn) resolve(`You must enter a known ISBN to look up reviews. We could not find a book with ISBN-${isbn}.`);
+
+      resolve(`Here\'s what people have to say about ${title} by ${author}\n\n${JSON.stringify(reviews, null, 4)}`);
+    }
+    catch (err) {
+      reject(err);
+    }
+  }).then(
+    (data) => res.send(data),
+    (err) => console.log(`Error: ${err}`)
+  )
 });
 
 module.exports.general = public_users;

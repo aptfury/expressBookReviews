@@ -5,12 +5,13 @@ const regd_users = express.Router();
 
 let users = [];
 
-const isValid = (username)=>{ //returns boolean
-//write code to check is the username is valid
+// Make sure username is valid for registration
+const isValid = (username) => {
+  return (username.length > 3 && /^[a-zA-Z]+$/.test(username)); // Check username is more than 3 characters and only contains letters
 }
 
-const authenticatedUser = (username,password)=>{ //returns boolean
-//write code to check if username and password match the one we have in records.
+// Make sure username and password match records
+const authenticatedUser = (username,password) => {
   let validusers = users.filter((user) => {
     return user.username === username && user.password === password;
   });
@@ -20,7 +21,6 @@ const authenticatedUser = (username,password)=>{ //returns boolean
 
 //only registered users can login
 regd_users.post("/login", (req,res) => {
-  //Write your code here
   const username = req.query.username;
   const password = req.query.password;
 
@@ -49,7 +49,6 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
   const review = req.query.review;
   const name = req.session.authorization['username'];
   const isbn = req.params.isbn;
