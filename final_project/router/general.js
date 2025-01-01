@@ -42,16 +42,14 @@ public_users.get('/',function (req, res) {
 */
 
 // Get available books list using promises
-public_users.get('/', (req, res) => {
-  const data = new Promise((resolve, reject) => {
+public_users.get('/', async (req, res) => {
+  new Promise((resolve, reject) => {
     try {
       resolve(books);
     } catch (err) {
       reject(err);
     }
-  });
-
-  data.then(
+  }).then(
     (data) => res.send(JSON.stringify(data, null, 4)),
     (err) => console.log(`Error: ${err}`)
   );
