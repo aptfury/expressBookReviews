@@ -47,10 +47,16 @@ regd_users.post("/login", (req,res) => {
   }
 });
 
+// Test username from session
+regd_users.get("/auth/userData", (req, res) => {
+  username = req.session.authorization['username'];
+  console.log(username);
+})
+
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  username = req.session.authorization['username'];
 });
 
 module.exports.authenticated = regd_users;
