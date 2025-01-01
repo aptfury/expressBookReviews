@@ -50,7 +50,8 @@ regd_users.post("/login", (req,res) => {
 // Test username from session
 regd_users.get("/auth/user", (req, res) => {
   let user_data = {
-    uname: req.session.authorization['username'],
+    session_name: req.session.authorization['username'],
+    session_token: req.session.authorization['accessToken'],
     username: users[0].username,
     password: users[0].password
   }
