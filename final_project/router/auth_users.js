@@ -18,6 +18,18 @@ const authenticatedUser = (username,password)=>{ //returns boolean
   return validusers.length > 0;
 }
 
+const isFirstReview = (book, name) => {
+  let has_review = book['reviews'][`${name}`];
+
+  return has_review === 0;
+}
+
+const isReviewUpdate = (book, name, review) => {
+  let prev_review = book['reviews'][`${name}`];
+  
+  return prev_review != review;
+}
+
 //only registered users can login
 regd_users.post("/login", (req,res) => {
   //Write your code here
@@ -47,21 +59,97 @@ regd_users.post("/login", (req,res) => {
   }
 });
 
-// Test username from session
-regd_users.get("/auth/user", (req, res) => {
-  let user_data = {
-    session_name: req.session.authorization['username'],
-    session_token: req.session.authorization['accessToken'],
-    username: users[0].username,
-    password: users[0].password
-  }
-  res.send(JSON.stringify(user_data, null, 4));
-})
-
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  username = req.session.authorization['username'];
+  const review = req.query.review;
+  const name = req.session.authorization['username'];
+  const isbn = req.params.isbn;
+  const book = books[isbn];
+  const title = book["title"];
+  const newReview = isFirstReview(book, name);
+  const reviewUpdate = isReviewUpdate(book, name, review);
+
+  if (!isbn) {
+    console.log(`ISBN-${isbn}`);
+    return res.status(400).json({
+      message: `A valid ISBN must be used to leave a review. Please check the ISBN and try again.`
+    })
+  }
+
+  if (!book) {
+    console.log(`Book:\n\n${book}`)
+    return res.status(404).json({
+      message: `We couldn\'t find a book under ISBN-${isbn}. Try finding the ISBN by searching for Title or Author.`
+    });
+  }
+
+  if (!review) {
+    console.log(`Review Submitted:\n\n${review}`);
+    return res.status(400).json({
+      message: `You cannot leave a blank review.`
+    });
+  }
+
+  if (!users.filter((user) => user.username === name)) {
+    console.log(`Name: ${name}`);
+    return res.status(400).json({
+      message: `We couldn\'t find a user with the name ${name}. You may need to login again. \(This should not show up and is just there as a catch all. Something is wrong with auth if this result appears.\))`
+    });
+  }
+
+  if (!newReview) { // Not their first review
+    if (!reviewUpdate)  { // Review matches previous review
+      // No Update
+      console.log(book["reviews"][`${name}`]);
+      return res.status(400).json({
+        message: `The review submitted for ${title} matches one that has already been submitted under your name for this title. Please submit an updated review if you would like to make any changes to it.`,
+        current_review: book["reviews"][`${name}`],
+        submitted_review: review,
+        submitted_by: name
+      });
+    } else { // Review does not match new submission and needs to be updated
+      // Update review to match
+      const old_review = book["reviews"][`${name}`];
+
+      book["reviews"][`${name}`] = review;
+
+      const new_review = book["reviews"][`${name}`];
+
+      if (new_review === review) {
+        console.log(`All Reviews:\n\n${book["reviews"]}\n\nYour Review:\n\n${book["reviews"][`${name}`]}\n\nSubmitted Review:\n\n${review}`);
+
+        return res.status(200).json({
+          message: `Your review for ${title} has been updated. Check information below to verify that the update is correct.`,
+          review_for: title,
+          submitted_by: name,
+          submitted_review: review,
+          old_review: old_review,
+          new_review: new_review,
+          updated_on: Date()
+        });
+      }
+
+      return res.status(400).json({
+        message: "We ran into an error when trying to update your review."
+      });
+    }
+  } else { // Their first review
+    // Add new review
+    book["reviews"][`${name}`] = review;
+
+    const new_review = book["reviews"][`${name}`];
+
+    return res.status(200).json({
+      message: `Your review of ${title} has been added successfully. Please review the information below to ensure accuracy. If you need to update your review, submit it as though adding a review for the first time and we\'ll update it for you.`,
+      review_for: title,
+      submitted_by: name,
+      submitted_review: review,
+      new_review: new_review,
+      added_on: Date(),
+      all_reviews: book["reviews"]
+    })
+  }
 });
 
 module.exports.authenticated = regd_users;
