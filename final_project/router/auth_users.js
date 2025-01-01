@@ -48,9 +48,13 @@ regd_users.post("/login", (req,res) => {
 });
 
 // Test username from session
-regd_users.get("/auth/userData", (req, res) => {
-  username = req.session.authorization['username'];
-  res.send(JSON.stringify({username}, null, 4));
+regd_users.get("/auth/user", (req, res) => {
+  let user_data = {
+    uname: req.session.authorization['username'],
+    username: user[0].username,
+    password: user[0].password
+  }
+  res.send(JSON.stringify({user_data}, null, 4));
 })
 
 // Add a book review
