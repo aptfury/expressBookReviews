@@ -18,18 +18,6 @@ const authenticatedUser = (username,password)=>{ //returns boolean
   return validusers.length > 0;
 }
 
-const isFirstReview = (book, name) => {
-  let has_review = book['reviews'][`${name}`];
-
-  return has_review === 0;
-}
-
-const isReviewUpdate = (book, name, review) => {
-  let prev_review = book['reviews'][`${name}`];
-  
-  return prev_review != review;
-}
-
 //only registered users can login
 regd_users.post("/login", (req,res) => {
   //Write your code here
@@ -67,8 +55,9 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   const isbn = req.params.isbn;
   const book = books[isbn];
   const title = book["title"];
-  const newReview = isFirstReview(book, name);
-  const reviewUpdate = isReviewUpdate(book, name, review);
+  const reviews = book['reviews'];
+  const hasReview = `${name}` in reviews; // true if review from user already exists; false if no review from user exists
+  const upToDate = hasReview ? reviews[`${name}`] === review : false; // true if saved review and submitted review match; false if review needs updating
 
   if (!isbn) {
     console.log(`ISBN-${isbn}`);
@@ -98,8 +87,8 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     });
   }
 
-  if (!newReview) { // Not their first review
-    if (!reviewUpdate)  { // Review matches previous review
+  if (hasReview) { // Not their first review
+    if (upToDate)  { // Review matches previous review
       // No Update
       console.log(book["reviews"][`${name}`]);
       return res.status(400).json({
