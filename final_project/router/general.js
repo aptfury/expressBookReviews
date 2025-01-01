@@ -87,7 +87,8 @@ public_users.get('/isbn/:isbn', async (req, res) => {
     (err) => console.log(`Error: ${err}`)
   );
 });
-  
+
+/* 
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
@@ -106,6 +107,31 @@ public_users.get('/author/:author',function (req, res) {
   } else {
     res.send(`We couldn\'t find a book by ${author}.`)
   }
+});
+ */
+
+// Get book by author with promise
+public_users.get('/author/:author', async (req, res) => {
+  new Promise((resolve, reject) => {
+    try {
+      const author = req.params.author;
+      let fromAuthor = {};
+      
+      for (let isbn in books) {
+        if (books[isbn]['author'] === author) fromAuthor[isbn] = books[isbn];
+      };
+
+      if (Object.keys(fromAuthor).length === 0) resolve(`We didn\'t find any books by ${author}`);
+
+      resolve(JSON.stringify(fromAuthor, null, 4));
+    }
+    catch (err) {
+      reject(err);
+    }
+  }).then(
+    (data) => res.send(data),
+    (err) => console.log(`Error: ${err}`)
+  )
 });
 
 // Get all books based on title
