@@ -134,6 +134,7 @@ public_users.get('/author/:author', async (req, res) => {
   )
 });
 
+/* 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
@@ -152,6 +153,31 @@ public_users.get('/title/:title',function (req, res) {
   } else {
     res.send(`We couldn\'t find a book by the name of ${title}.`);
   }
+});
+ */
+
+// Get book by title with promise
+public_users.get('/title/:title', async (req, res) => {
+  new Promise((resolve, reject) => {
+    try {
+      const title = req.params.title;
+      let withTitle = {};
+      
+      for (let isbn in books) {
+        if (books[isbn]["title"] === title) withTitle[isbn] = books[isbn];
+      }
+
+      if (Object.keys(withTitle).length === 0) resolve (`We didn\'t find any books named ${title}.`);
+
+      resolve(JSON.stringify(withTitle, null, 4));
+    }
+    catch (err) {
+      reject(err);
+    }
+  }).then(
+    (data) => res.send(data),
+    (err) => console.log(`Error: ${err}`)
+  );
 });
 
 //  Get book review
