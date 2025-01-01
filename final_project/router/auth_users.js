@@ -50,7 +50,7 @@ regd_users.post("/login", (req,res) => {
 // Test username from session
 regd_users.get("/auth/userData", (req, res) => {
   username = req.session.authorization['username'];
-  console.log(username);
+  res.send(JSON.stringify({username}, null, 4));
 })
 
 // Add a book review
