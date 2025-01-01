@@ -13,56 +13,6 @@ const doesExist = (username) => {
   return userswithsamename.length > 0;
 }
 
-function isValidJson(json) {
-  try {
-    JSON.parse(json);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-public_users.post('/test/body', async (req, res) => {
-  
-  new Promise((resolve, reject) => {
-    try {
-      let obj = {
-        first: req.body.first,
-        second: req.body.second
-      }
-
-      console.log(obj.first);
-      resolve(JSON.stringify(req.body, null, 2));
-    }
-    catch (err) {
-      reject(err);
-    }
-  }).then(
-    (data) => res.send(data),
-    (err) => console.log(`Error: ${err}`)
-  );
-});
-
-public_users.post('/test/query', async (req, res) => {
-  new Promise((resolve, reject) => {
-    try {
-      let obj = {
-        first: req.query.first,
-        second: req.query.second
-      }
-
-      console.log(obj);
-      resolve(obj);
-    }
-    catch (err) {
-      reject(err);
-    }
-  }).then(
-    (data) => res.send(data),
-    (err) => console.log(`Error: ${err}`)
-  );
-})
-
 public_users.post("/register", (req, res) => {
   //Write your code here
   let username = req.query.username;
