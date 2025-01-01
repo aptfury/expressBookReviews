@@ -153,6 +153,7 @@ regd_users.delete("auth/review/:isbn", (req, res) => {
   if (!reviewExists) {
     return res.status(400).json({
       message: `We could not find a review by ${name} for ${title}. See a list of the reviews below to make sure this is correct.`,
+      request_by: name,
       reviews: reviews
     })
   } else {
@@ -172,6 +173,7 @@ regd_users.delete("auth/review/:isbn", (req, res) => {
       message: `${name}\'s review has been successfully removed from ${title}. Check the reviews list below to verify removal.`,
       removed_review_by: name,
       removed_review: removed,
+      previous_reviews_list: reviews,
       updated_reviews_list: updated_reviews_list
     });
   }
