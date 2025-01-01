@@ -2,6 +2,7 @@ const express = require('express');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
+let axios = require('axios').defaults;
 
 const public_users = express.Router();
 
@@ -34,8 +35,8 @@ public_users.post("/register", (req, res) => {
   return res.status(404).json({ message: "Unable to register user." });
 });
 
-// Get the book list available in the shop
 /*
+// Get the book list available in the shop - no axios or promise
 public_users.get('/',function (req, res) {
   res.send(JSON.stringify({ books }, null, 4));
 });
