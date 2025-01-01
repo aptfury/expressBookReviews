@@ -51,8 +51,8 @@ regd_users.post("/login", (req,res) => {
 regd_users.get("/auth/user", (req, res) => {
   let user_data = {
     uname: req.session.authorization['username'],
-    username: user[0].username,
-    password: user[0].password
+    username: users[0].username,
+    password: users[0].password
   }
   res.send(JSON.stringify({user_data}, null, 4));
 })
