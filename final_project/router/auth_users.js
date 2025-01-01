@@ -159,28 +159,11 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
   } else {
     delete reviews[`${name}`];
 
-    /*
-    let updated_reviews = {};
-
-    for (let author in reviews) {
-      if (!(author === name)) {
-        let rev = reviews[author];
-        updated_reviews[author];
-        updated_reviews[author] = rev;
-      }
-    }
-
-    books[isbn]['reviews'] = updated_reviews;
-    */
-
-    const updated_reviews_list = books[isbn]['reviews'];
-
     return res.status(200).json({
       message: `${name}\'s review has been successfully removed from ${title}. Check the reviews list below to verify removal.`,
       removed_review_by: name,
       removed_review: removed,
-      previous_reviews_list: reviews,
-      updated_reviews_list: updated_reviews_list
+      updated_reviews_list: reviews
     });
   }
 })
