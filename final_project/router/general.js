@@ -41,20 +41,21 @@ public_users.get('/',function (req, res) {
 });
 */
 
-// Get available books list using promises
+// Get available books list with promise
 public_users.get('/', async (req, res) => {
   new Promise((resolve, reject) => {
     try {
-      resolve(books);
+      resolve(JSON.stringify(books, null, 4));
     } catch (err) {
       reject(err);
     }
   }).then(
-    (data) => res.send(JSON.stringify(data, null, 4)),
+    (data) => res.send(data),
     (err) => console.log(`Error: ${err}`)
   );
 });
 
+/* 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
@@ -66,7 +67,26 @@ public_users.get('/isbn/:isbn',function (req, res) {
   } else {
     res.send("Unable to locate the book you were looking for.");
   }
- });
+});
+ */
+
+// Get book by ISBN with promise
+public_users.get('/isbn/:isbn', async (req, res) => {
+  new Promise((resolve, reject) => {
+    try {
+      const isbn = req.params.isbn;
+      const book = books[isbn];
+
+      book ? resolve(JSON.stringify(book, null, 4)) : resolve("Unable to locate the book you were looking for.");
+    }
+    catch (err) {
+      reject(err);
+    }
+  }).then(
+    (data) => res.send(data),
+    (err) => console.log(`Error: ${err}`)
+  );
+});
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
