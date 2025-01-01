@@ -160,8 +160,10 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
     let updated_reviews = {};
 
     for (let author in reviews) {
-      if (author != name) {
-        updated_reviews[author] = reviews['author'];
+      if (!(author === name)) {
+        let rev = reviews[author];
+        updated_reviews[author];
+        updated_reviews[author] = rev;
       }
     }
 
