@@ -141,6 +141,42 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   }
 });
 
+// Delete a book review
+regd_users.delete("auth/review/:isbn", (req, res) => {
+  const name = req.session.authorization['username'];
+  const isbn = req.params.isbn;
+  const title = books[isbn]['title'];
+  const reviews = books[isbn]['reviews'];
+  const removed = reviews[`${name}`];
+  const reviewExists = `${name}` in reviews; // True review by this user exists; False if there is no review by this user
+
+  if (!reviewExists) {
+    return res.status(400).json({
+      message: `We could not find a review by ${name} for ${title}. See a list of the reviews below to make sure this is correct.`,
+      reviews: reviews
+    })
+  } else {
+    let updated_reviews = {};
+
+    for (let author in reviews) {
+      if (author != name) {
+        updated_reviews[author] = reviews['author'];
+      }
+    }
+
+    books[isbn]['reviews'] = updated_reviews;
+
+    const updated_reviews_list = books[isbn]['reviews'];
+
+    return res.status(200).json({
+      message: `${name}\'s review has been successfully removed from ${title}. Check the reviews list below to verify removal.`,
+      removed_review_by: name,
+      removed_review: removed,
+      updated_reviews_list: updated_reviews_list
+    });
+  }
+})
+
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
 module.exports.users = users;
