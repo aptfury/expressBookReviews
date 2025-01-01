@@ -157,6 +157,9 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
       reviews: reviews
     })
   } else {
+    delete reviews[`${name}`];
+
+    /*
     let updated_reviews = {};
 
     for (let author in reviews) {
@@ -168,6 +171,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
     }
 
     books[isbn]['reviews'] = updated_reviews;
+    */
 
     const updated_reviews_list = books[isbn]['reviews'];
 
