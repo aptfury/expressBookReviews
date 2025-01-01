@@ -55,7 +55,7 @@ regd_users.get("/auth/user", (req, res) => {
     username: users[0].username,
     password: users[0].password
   }
-  res.send(JSON.stringify({user_data}, null, 4));
+  res.send(JSON.stringify(user_data, null, 4));
 })
 
 // Add a book review
